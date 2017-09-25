@@ -2,30 +2,38 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
 
+fcfstext=""
+sjftext=""
+srpttext=""
+priotext=""
+roundtext=""
+
 class Process:
+    wtime = 0;
     def __init__(self,number,arrival,burst, prio):
         self.id= number
         self.arr= arrival
         self.cputime= burst
         self.priority= prio
-
+    def __repr__(self):
+        return "<P:%s t:%s>" % (self.id, self.cputime)
+    def __str__(self):
+        return "From str method of Test: <P:%s t:%s>" % (self.id, self.cputime)
 
 def makeprocess(self):
     i = self.split()
-    #print(i[0], i[1], i[2], i[3])
     return Process(i[0], i[1], i[2], i[3])
 
-def openfile(self):
-    root.filename = filedialog.askopenfilename( filetypes = ( ("Text file", "*.txt"),("All files", "*.*")))
-    with open(root.filename) as file:
+def openfile():
+    filename = filedialog.askopenfilename( filetypes = ( ("Text file", "*.txt"),("All files", "*.*")))
+    with open(filename) as file:
         content = file.readlines()
     content = [x.strip() for x in content]
     content.pop(0)
     processes = [makeprocess(a) for a in content]
-    [x.print() for x in processes]
-
-def displayname():
-    print("TEST!")
+    print([x for x in processes])
+    fcfstext.join("FCFS: ")
+    fcfstext.join([x.__str__() for x in processes])
 
 
 def showhelp():
@@ -39,16 +47,34 @@ mainframe = Frame(root)
 mainframe.pack(side=LEFT)
 
 #labels here
-fcfsbutton = Button(mainframe,text="FCFS", command=displayname)
-fcfsbutton.grid(row=0,sticky=NW)
-sjfbutton = Button(mainframe,text="SJF", command=displayname)
-sjfbutton.grid(row=1,sticky=NW)
-srptbutton = Button(mainframe,text="SRPT", command=displayname)
-srptbutton.grid(row=2,sticky=NW)
-priobutton = Button(mainframe,text="Priority", command=displayname)
-priobutton.grid(row=3,sticky=NW)
-robinbutton = Button(mainframe,text="Round Robin", command=displayname)
-robinbutton.grid(row=4,sticky=NW)
+fcfslabel = Label(mainframe,text="FCFS")
+fcfslabel.grid(column=0,row=0,sticky=E)
+fcfsContent = Label(mainframe,text=fcfstext)
+fcfsContent.grid(column=1,row=0,sticky=E)
+gap1 = Label(mainframe,text=" ")
+gap1.grid(column=0,row=1,sticky=E)
+sjflabel = Label(mainframe,text="SJF")
+sjflabel.grid(column=0,row=2,sticky=E)
+sjfContent = Label(mainframe,text=sjftext)
+sjfContent.grid(column=1,row=0,sticky=E)
+gap2 = Label(mainframe,text=" ")
+gap2.grid(column=0,row=3,sticky=E)
+srptlabel = Label(mainframe,text="SRPT")
+srptlabel.grid(column=0,row=4,sticky=E)
+srptContent = Label(mainframe,text=srpttext)
+srptContent.grid(column=1,row=0,sticky=E)
+gap3 = Label(mainframe,text=" ")
+gap3.grid(column=0,row=5,sticky=E)
+priolabel = Label(mainframe,text="Priority")
+priolabel.grid(column=0,row=6,sticky=E)
+prioContent = Label(mainframe,text=priotext)
+prioContent.grid(column=1,row=0,sticky=E)
+gap4 = Label(mainframe,text=" ")
+gap4.grid(column=0,row=7,sticky=E)
+robinlabel = Label(mainframe,text="Round Robin")
+robinlabel.grid(column=0,row=8,sticky=E)
+robinContent = Label(mainframe,text=roundtext)
+robinContent.grid(column=1,row=0,sticky=E)
 
 #   main menu here
 
@@ -57,22 +83,16 @@ root.title("Scheduling Algorithm Simulator 1.0")
 root.config(menu=menu)
 
 #submenu code goes here
-subMenu = Menu(menu, tearoff=False)
-menu.add_cascade(label="File", menu=subMenu)
-subMenu.add_command(label="Help",command=showhelp)
-subMenu.add_command(label="Exit", command=root.quit)
+filemenu = Menu(menu, tearoff=False)
+menu.add_cascade(label="File", menu=filemenu)
+filemenu.add_command(label="Open...", command=openfile)
 
-#toolbar code here
-bottombar = Frame(root,bg="black")
+filemenu.add_command(label="Help",command=showhelp)
+filemenu.add_separator()
+filemenu.add_command(label="Exit", command=root.quit)
 
-openButton = Button(bottombar,text="Open data file")
-openButton.bind("<Button-1>",openfile)
-openButton.grid(row=0, column=0)
-
-
-
-quitButton = Button(bottombar, text="Quit", command=root.quit)
-quitButton.grid(row=0,column=6)
+#bottombar code here
+bottombar = Frame(root,bg="white")
 
 bottombar.pack(side=BOTTOM, fill=X)
 
