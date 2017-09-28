@@ -22,7 +22,10 @@ class Process:
         return "P:%s t:%s w:%s" % (self.processid, self.burst,self.wtime)
     def __str__(self):
         #return "<P:%s A:%s t:%s prio:%s>" % (self.processid, self.arr, self.cputime,self.priority)
-        return "P:%s t:%s  w:%s" % (self.processid, self.burst,self.wtime)
+        return "P:%s t:%s " % (self.processid, self.burst)
+    def __copy__(self):
+        return Process(self.processid,self.arr,self.burst,self.priority)
+
 
 def makeprocess(self):
     i = self.split()
@@ -45,21 +48,29 @@ def openfile():
     sum=0
     timer=0
     waiting = [Process]
-    waiting = roundprocess
+    waiting = roundprocess.copy()
+    finalprocess=[Process]
+    finalprocess.__init__()
     roundrobin = []
     while waiting.__len__() > 0:
-        current = waiting.pop(0)
-        roundrobin.append(current.__str__())
+        current = waiting.pop(0).__copy__()
+        roundtext += "{P:%s t:%s} "  % (current.processid.__str__(),current.burst.__str__())
         current.wtime -= 4
-        sum += current.wtime
         current.burst -= 4
-        timer+=4
-        if current.burst >= 0:
-            current.wtime+=timer
+        timer += 4
+        if current.burst > 0:
             waiting.append(current)
-    roundtext = ([y for y in roundrobin])
-    sum = sum/length
-    roundtext += "\naverage_waiting_time:"+sum.__str__()
+        else:
+            current.wtime += timer
+            finalprocess.append(current)
+    #roundtext = ([y for y in finalprocess])
+    finalprocess = sorted(finalprocess, key=lambda x: x.processid, reverse=False)
+    sum = 0;
+    roundtext += "\nwaiting_time:"
+    for x in finalprocess:
+        roundtext += "P:%s,w:%s|" % (x.processid.__str__(),x.wtime.__str__())
+        sum += x.wtime
+    roundtext += "\naverage_waiting_time:"+(sum/length).__str__()
     robinContent.config(text=roundtext)
 
     global fcfstext
@@ -69,7 +80,9 @@ def openfile():
         wait1 = wait1 + x.burst
     fcfstext = ([x.__str__() for x in fcfsprocess])  # yes, it's dirt cheap!
     wait1 = 0;
+    fcfstext += "\nwaiting_time:"
     for x in fcfsprocess:
+        fcfstext += "P:%s,w:%s|" % (x.processid.__str__(), x.wtime.__str__())
         wait1 += x.wtime
     fcfstext += "\naverage_waiting_time:" + (wait1/length).__str__()
     fcfsContent.config(text=fcfstext)
@@ -83,7 +96,9 @@ def openfile():
     sjftext = ([x.__str__() for x in sjfprocess])
     sjfprocess = sorted(sjfprocess, key=lambda x: (x.processid), reverse=False)
     wait2=0;
+    sjftext += "\nwaiting_time:"
     for x in sjfprocess:
+        sjftext += "P:%s,w:%s|" % (x.processid.__str__(), x.wtime.__str__())
         wait2+=x.wtime
     sjftext += "\naverage_waiting_time:" +(wait2/length).__str__()
     sjfContent.config(text=sjftext)
@@ -97,11 +112,12 @@ def openfile():
     priotext = ([x.__str__() + " pr:" + x.priority.__str__() for x in prioprocess])
     prioprocess = sorted(prioprocess, key=lambda x: (x.processid), reverse=False)
     wait2 = 0;
+    priotext += "\nwaiting_time:"
     for x in prioprocess:
+        priotext += "P:%s,w:%s|" % (x.processid.__str__(), x.wtime.__str__())
         wait3 += x.wtime
     priotext += "\naverage_waiting_time:" + (wait3 / length).__str__()
     prioContent.config(text=priotext)
-
 
 
     #todo: include arrival time into calculation
@@ -116,6 +132,7 @@ root = Tk()
 
 #**************************UI**************** main window code goes  here
 root.minsize(width=325,height=100)
+
 #left frame here
 mainframe = Frame(root,bg='#2B2B2B')
 mainframe.pack()
@@ -125,34 +142,34 @@ backgroundcolor='#2B2B2B'
 fgcolor="#A9B7C6"
 
 #labels here
-fcfslabel = Label(mainframe,text="FCFS",bg=backgroundcolor)
+fcfslabel = Label(mainframe,text="FCFS",bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 fcfslabel.grid(column=0,row=0,sticky=E)
 fcfslabel.config(foreground=fgcolor)
-fcfsContent = Label(mainframe,text=fcfstext,wraplength=textwidth,bg=backgroundcolor)
+fcfsContent = Label(mainframe,text=fcfstext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 fcfsContent.grid(column=1,row=0,sticky=W)
 fcfsContent.config(foreground=fgcolor)
-sjflabel = Label(mainframe,text="SJF",bg=backgroundcolor)
+sjflabel = Label(mainframe,text="SJF",bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 sjflabel.grid(column=0,row=1,sticky=E)
 sjflabel.config(foreground=fgcolor)
-sjfContent = Label(mainframe,text=sjftext,wraplength=textwidth,bg=backgroundcolor)
+sjfContent = Label(mainframe,text=sjftext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 sjfContent.grid(column=1,row=1,sticky=W)
 sjfContent.config(foreground=fgcolor)
-srptlabel = Label(mainframe,text="SRPT",bg=backgroundcolor)
+srptlabel = Label(mainframe,text="SRPT",bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 srptlabel.grid(column=0,row=2,sticky=E)
 srptlabel.config(foreground=fgcolor)
-srptContent = Label(mainframe,text=srpttext,wraplength=textwidth,bg=backgroundcolor)
+srptContent = Label(mainframe,text=srpttext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 srptContent.grid(column=1,row=2,sticky=W)
 srptContent.config(foreground=fgcolor)
-priolabel = Label(mainframe,text="Priority",bg=backgroundcolor)
+priolabel = Label(mainframe,text="Priority",bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 priolabel.grid(column=0,row=3,sticky=E)
 priolabel.config(foreground=fgcolor)
-prioContent = Label(mainframe,text=priotext,wraplength=textwidth,bg=backgroundcolor)
+prioContent = Label(mainframe,text=priotext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 prioContent.grid(column=1,row=3,sticky=W)
 prioContent.config(foreground=fgcolor)
-robinlabel = Label(mainframe,text="Round Robin",bg=backgroundcolor)
+robinlabel = Label(mainframe,text="Round Robin",bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 robinlabel.grid(column=0,row=4,sticky=E)
 robinlabel.config(foreground=fgcolor)
-robinContent = Label(mainframe,text=roundtext,wraplength=textwidth,bg=backgroundcolor)
+robinContent = Label(mainframe,text=roundtext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 robinContent.grid(column=1,row=4,sticky=W)
 robinContent.config(foreground=fgcolor)
 
