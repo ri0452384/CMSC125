@@ -2,13 +2,12 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
 
-#initialize variables(each text will be the placeholder for the GUI in the output
-fcfstext=""
-sjftext=""
-srpttext=""
-priotext=""
-roundtext=""
-
+# initialize variables(each text will be the placeholder for the GUI in the output
+fcfstext = ""
+sjftext = ""
+srpttext = ""
+priotext = ""
+roundtext = ""
 
 class Process:
     def __init__(self,number,arrival,bursttime, prio):
@@ -22,7 +21,7 @@ class Process:
         return "P:%s t:%s w:%s" % (self.processid, self.burst,self.wtime)
     def __str__(self):
         #return "<P:%s A:%s t:%s prio:%s>" % (self.processid, self.arr, self.cputime,self.priority)
-        return "P:%s t:%s " % (self.processid, self.burst)
+        return "P:%s t:%s" % (self.processid, self.burst)
     def __copy__(self):
         return Process(self.processid,self.arr,self.burst,self.priority)
 
@@ -32,6 +31,7 @@ def makeprocess(self):
     return Process(i[0], i[1], i[2], i[3])
 
 def openfile():
+    # initialize variables(each text will be the placeholder for the GUI in the output
     filename = filedialog.askopenfilename( filetypes = ( ("Text file", "*.txt"),("All files", "*.*")))
     with open(filename) as file:
         content = file.readlines()
@@ -42,16 +42,15 @@ def openfile():
     sjfprocess=[makeprocess(a) for a in content]
     prioprocess=[makeprocess(a) for a in content]
     roundprocess = [makeprocess(a) for a in content]
+    srptprocess=[makeprocess(a) for a in content]
     length = processes.__len__()
 
     global roundtext
     sum=0
     timer=0
-    waiting = [Process]
     waiting = roundprocess.copy()
     finalprocess=[Process]
     finalprocess.__init__()
-    roundrobin = []
     while waiting.__len__() > 0:
         current = waiting.pop(0).__copy__()
         roundtext += "{P:%s t:%s} "  % (current.processid.__str__(),current.burst.__str__())
@@ -63,7 +62,6 @@ def openfile():
         else:
             current.wtime += timer
             finalprocess.append(current)
-    #roundtext = ([y for y in finalprocess])
     finalprocess = sorted(finalprocess, key=lambda x: x.processid, reverse=False)
     sum = 0;
     roundtext += "\nwaiting_time:"
@@ -111,7 +109,7 @@ def openfile():
         wait3 +=x.burst
     priotext = ([x.__str__() + " pr:" + x.priority.__str__() for x in prioprocess])
     prioprocess = sorted(prioprocess, key=lambda x: (x.processid), reverse=False)
-    wait2 = 0;
+    wait3 = 0;
     priotext += "\nwaiting_time:"
     for x in prioprocess:
         priotext += "P:%s,w:%s|" % (x.processid.__str__(), x.wtime.__str__())
@@ -119,10 +117,50 @@ def openfile():
     priotext += "\naverage_waiting_time:" + (wait3 / length).__str__()
     prioContent.config(text=priotext)
 
-
     #todo: include arrival time into calculation
     global srpttext
-    srpttext = ([x.__str__() for x in processes])
+    elements= 0
+    timer = 0
+    waiting = [Process]
+    waiting.__init__()
+    srptfinalprocess = [Process]
+    srptfinalprocess.__init__()
+    stop=False
+    current=None
+    while stop == False:
+        #load processes with same arrival time to the waiting queue
+        for x in srptprocess:
+            if x.arr == timer:
+                waiting.append(x)
+        waiting = sorted(waiting, key=lambda x : x.burst, reverse=False)
+        if current == None:
+            #print(timer)
+            current = waiting.pop(0)
+            srpttext += "{P:%s t:%s} " % (current.processid.__str__(), current.burst.__str__())
+            current.wtime -= timer
+            srptfinalprocess.append(current.__copy__())
+            elements +=1
+        else:
+            current.burst -= 1
+        if current.burst <= 0:
+            current=None
+        timer += 1
+        for x in waiting:
+            x.wtime +=1
+        if waiting.__len__() == 0 and elements == 20:
+            stop=True
+    wait4 = 0
+    for x in srptfinalprocess:
+        x.wtime = wait4 - x.arr
+        wait4 += x.burst
+    srptfinalprocess = sorted(srptfinalprocess, key=lambda x: x.processid, reverse=False)
+    wait4=0
+    srpttext += "\nwaiting_time:"
+    print(srptfinalprocess)
+    for x in srptfinalprocess:
+        wait4+=x.wtime
+        srpttext += "P:%s,w:%s|" % (x.processid.__str__(), x.wtime.__str__())
+    srpttext += "\naverage_waiting_time:" + (wait4 / length).__str__()
     srptContent.config(text=srpttext)
 
 def showhelp():
@@ -137,37 +175,37 @@ root.minsize(width=325,height=100)
 mainframe = Frame(root,bg='#2B2B2B')
 mainframe.pack()
 
-textwidth=450
+textwidth=1000
 backgroundcolor='#2B2B2B'
 fgcolor="#A9B7C6"
 
 #labels here
-fcfslabel = Label(mainframe,text="FCFS",bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
-fcfslabel.grid(column=0,row=0,sticky=E)
+fcfslabel = Label(mainframe,text="FCFS",bg=backgroundcolor,borderwidth=1)
+fcfslabel.grid(column=0,row=0,sticky=NE)
 fcfslabel.config(foreground=fgcolor)
 fcfsContent = Label(mainframe,text=fcfstext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 fcfsContent.grid(column=1,row=0,sticky=W)
 fcfsContent.config(foreground=fgcolor)
-sjflabel = Label(mainframe,text="SJF",bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
-sjflabel.grid(column=0,row=1,sticky=E)
+sjflabel = Label(mainframe,text="SJF",bg=backgroundcolor,borderwidth=1)
+sjflabel.grid(column=0,row=1,sticky=NE)
 sjflabel.config(foreground=fgcolor)
 sjfContent = Label(mainframe,text=sjftext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 sjfContent.grid(column=1,row=1,sticky=W)
 sjfContent.config(foreground=fgcolor)
-srptlabel = Label(mainframe,text="SRPT",bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
-srptlabel.grid(column=0,row=2,sticky=E)
+srptlabel = Label(mainframe,text="SRPT",bg=backgroundcolor,borderwidth=1)
+srptlabel.grid(column=0,row=2,sticky=NE)
 srptlabel.config(foreground=fgcolor)
 srptContent = Label(mainframe,text=srpttext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 srptContent.grid(column=1,row=2,sticky=W)
 srptContent.config(foreground=fgcolor)
-priolabel = Label(mainframe,text="Priority",bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
-priolabel.grid(column=0,row=3,sticky=E)
+priolabel = Label(mainframe,text="Priority",bg=backgroundcolor,borderwidth=1)
+priolabel.grid(column=0,row=3,sticky=NE)
 priolabel.config(foreground=fgcolor)
 prioContent = Label(mainframe,text=priotext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 prioContent.grid(column=1,row=3,sticky=W)
 prioContent.config(foreground=fgcolor)
-robinlabel = Label(mainframe,text="Round Robin",bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
-robinlabel.grid(column=0,row=4,sticky=E)
+robinlabel = Label(mainframe,text="Round Robin",bg=backgroundcolor,borderwidth=1)
+robinlabel.grid(column=0,row=4,sticky=NE)
 robinlabel.config(foreground=fgcolor)
 robinContent = Label(mainframe,text=roundtext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 robinContent.grid(column=1,row=4,sticky=W)
