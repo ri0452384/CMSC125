@@ -1,3 +1,7 @@
+#
+#   CPU Scheduling Algoritms v 1.0 by Rayven N. Ingles
+#   All wrongs reversed 2017
+#
 from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
@@ -36,7 +40,9 @@ def openfile():
     with open(filename) as file:
         content = file.readlines()
     content = [x.strip() for x in content]
+    #removes the column headers, leaaving only the process data
     content.pop(0)
+    #process data then gets created into separate arrays
     processes = [makeprocess(a) for a in content]
     fcfsprocess=[makeprocess(a) for a in content]
     sjfprocess=[makeprocess(a) for a in content]
@@ -44,7 +50,7 @@ def openfile():
     roundprocess = [makeprocess(a) for a in content]
     srptprocess=[makeprocess(a) for a in content]
     length = processes.__len__()
-
+#   round robin algo
     global roundtext
     sum=0
     timer=0
@@ -70,7 +76,7 @@ def openfile():
         sum += x.wtime
     roundtext += "\naverage_waiting_time:"+(sum/length).__str__()
     robinContent.config(text=roundtext)
-
+#   fcfs algo
     global fcfstext
     wait1=0
     for x in fcfsprocess:
@@ -84,7 +90,7 @@ def openfile():
         wait1 += x.wtime
     fcfstext += "\naverage_waiting_time:" + (wait1/length).__str__()
     fcfsContent.config(text=fcfstext)
-
+#   sjf algo
     global sjftext
     wait2 = 0
     sjfprocess = sorted(sjfprocess,key=lambda x: (x.burst,x.processid), reverse=False)
@@ -100,7 +106,7 @@ def openfile():
         wait2+=x.wtime
     sjftext += "\naverage_waiting_time:" +(wait2/length).__str__()
     sjfContent.config(text=sjftext)
-
+#   priority algo
     global priotext
     wait3 = 0
     prioprocess=  sorted(prioprocess,key=lambda x: (x.priority,x.processid), reverse=False)
@@ -116,8 +122,7 @@ def openfile():
         wait3 += x.wtime
     priotext += "\naverage_waiting_time:" + (wait3 / length).__str__()
     prioContent.config(text=priotext)
-
-    #todo: include arrival time into calculation
+#   srpt algo
     global srpttext
     elements= 0
     timer = 0
@@ -162,13 +167,13 @@ def openfile():
         srpttext += "P:%s,w:%s|" % (x.processid.__str__(), x.wtime.__str__())
     srpttext += "\naverage_waiting_time:" + (wait4 / length).__str__()
     srptContent.config(text=srpttext)
-
+#text for the Help menu
 def showhelp():
     messagebox.showinfo('Lab 2 description:',"On Processor Management and Job SchedulingImplement the FCFS, SJF, SRPT, Priority and Round-robin scheduling.\n Sample data is given to you (please refer to process1.txt and process2.txt).\n• For FCFS and SJF, assume all processes arrived at time 0 in that order.\n • For SRPT, consider the arrival time of each processes.\n • For Priority, assume that lower-value priorities have higher priorities (that means 0 is the highest priority).\n • For round-robin scheduling, assume a uniform time slice of 4 millisecond.\nDisplay the waiting time for each process for every algorithm, as well as their average computing time.\n Also, perform an algorithm evaluation, based on the datasets given to you.")
 
-root = Tk()
 
-#**************************UI**************** main window code goes  here
+#************************** main window code goes  here***********************************
+root = Tk()
 root.minsize(width=325,height=100)
 
 #left frame here
@@ -186,24 +191,28 @@ fcfslabel.config(foreground=fgcolor)
 fcfsContent = Label(mainframe,text=fcfstext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 fcfsContent.grid(column=1,row=0,sticky=W)
 fcfsContent.config(foreground=fgcolor)
+
 sjflabel = Label(mainframe,text="SJF",bg=backgroundcolor,borderwidth=1)
 sjflabel.grid(column=0,row=1,sticky=NE)
 sjflabel.config(foreground=fgcolor)
 sjfContent = Label(mainframe,text=sjftext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 sjfContent.grid(column=1,row=1,sticky=W)
 sjfContent.config(foreground=fgcolor)
+
 srptlabel = Label(mainframe,text="SRPT",bg=backgroundcolor,borderwidth=1)
 srptlabel.grid(column=0,row=2,sticky=NE)
 srptlabel.config(foreground=fgcolor)
 srptContent = Label(mainframe,text=srpttext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 srptContent.grid(column=1,row=2,sticky=W)
 srptContent.config(foreground=fgcolor)
+
 priolabel = Label(mainframe,text="Priority",bg=backgroundcolor,borderwidth=1)
 priolabel.grid(column=0,row=3,sticky=NE)
 priolabel.config(foreground=fgcolor)
 prioContent = Label(mainframe,text=priotext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
 prioContent.grid(column=1,row=3,sticky=W)
 prioContent.config(foreground=fgcolor)
+
 robinlabel = Label(mainframe,text="Round Robin",bg=backgroundcolor,borderwidth=1)
 robinlabel.grid(column=0,row=4,sticky=NE)
 robinlabel.config(foreground=fgcolor)
