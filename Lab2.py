@@ -1,5 +1,5 @@
 #
-#   CPU Scheduling Algoritms v 1.0 by Rayven N. Ingles
+#   CPU Scheduling Algorithms v 1.0 by Rayven N. Ingles
 #   All wrongs reversed 2017
 #
 from tkinter import *
