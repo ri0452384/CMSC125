@@ -36,7 +36,7 @@ def makeprocess(self):
 
 def openfile():
     # initialize variables(each text will be the placeholder for the GUI in the output
-    filename = filedialog.askopenfilename( filetypes = ( ("Text file", "*.txt"),("All files", "*.*")))
+    filename = filedialog.askopenfilename( filetypes=(("Text file", "*.txt"),("All files", "*.*")))
     with open(filename) as file:
         content = file.readlines()
     content = [x.strip() for x in content]
@@ -44,11 +44,11 @@ def openfile():
     content.pop(0)
     #process data then gets created into separate arrays
     processes = [makeprocess(a) for a in content]
-    fcfsprocess=[makeprocess(a) for a in content]
-    sjfprocess=[makeprocess(a) for a in content]
-    prioprocess=[makeprocess(a) for a in content]
+    fcfsprocess = [makeprocess(a) for a in content]
+    sjfprocess = [makeprocess(a) for a in content]
+    prioprocess = [makeprocess(a) for a in content]
     roundprocess = [makeprocess(a) for a in content]
-    srptprocess=[makeprocess(a) for a in content]
+    srptprocess = [makeprocess(a) for a in content]
     length = processes.__len__()
 #   round robin algo
     global roundtext
@@ -69,12 +69,12 @@ def openfile():
             current.wtime += timer
             finalprocess.append(current)
     finalprocess = sorted(finalprocess, key=lambda x: x.processid, reverse=False)
-    sum = 0;
+    total = 0
     roundtext += "\nwaiting_time:"
     for x in finalprocess:
         roundtext += "P:%s,w:%s|" % (x.processid.__str__(),x.wtime.__str__())
-        sum += x.wtime
-    roundtext += "\naverage_waiting_time:"+(sum/length).__str__()
+        total += x.wtime
+    roundtext += "\naverage_waiting_time:"+(total/length).__str__()
     robinContent.config(text=roundtext)
 #   fcfs algo
     global fcfstext
@@ -83,7 +83,7 @@ def openfile():
         x.wtime=wait1
         wait1 = wait1 + x.burst
     fcfstext = ([x.__str__() for x in fcfsprocess])  # yes, it's dirt cheap!
-    wait1 = 0;
+    wait1 = 0
     fcfstext += "\nwaiting_time:"
     for x in fcfsprocess:
         fcfstext += "P:%s,w:%s|" % (x.processid.__str__(), x.wtime.__str__())
@@ -95,26 +95,26 @@ def openfile():
     wait2 = 0
     sjfprocess = sorted(sjfprocess,key=lambda x: (x.burst,x.processid), reverse=False)
     for x in sjfprocess:
-        x.wtime=wait2
-        wait2 +=x.burst
+        x.wtime = wait2
+        wait2 += x.burst
     sjftext = ([x.__str__() for x in sjfprocess])
     sjfprocess = sorted(sjfprocess, key=lambda x: (x.processid), reverse=False)
-    wait2=0;
+    wait2 = 0
     sjftext += "\nwaiting_time:"
     for x in sjfprocess:
         sjftext += "P:%s,w:%s|" % (x.processid.__str__(), x.wtime.__str__())
         wait2+=x.wtime
-    sjftext += "\naverage_waiting_time:" +(wait2/length).__str__()
+    sjftext += "\naverage_waiting_time:" + (wait2/length).__str__()
     sjfContent.config(text=sjftext)
 #   priority algo
     global priotext
     wait3 = 0
-    prioprocess=  sorted(prioprocess,key=lambda x: (x.priority,x.processid), reverse=False)
+    prioprocess = sorted(prioprocess,key=lambda x: (x.priority,x.processid), reverse=False)
     for x in prioprocess:
         x.wtime=wait3
         wait3 +=x.burst
     priotext = ([x.__str__() + " pr:" + x.priority.__str__() for x in prioprocess])
-    prioprocess = sorted(prioprocess, key=lambda x: (x.processid), reverse=False)
+    prioprocess = sorted(prioprocess, key=lambda x: x.processid, reverse=False)
     wait3 = 0;
     priotext += "\nwaiting_time:"
     for x in prioprocess:
@@ -144,16 +144,16 @@ def openfile():
             srpttext += "{P:%s t:%s} " % (current.processid.__str__(), current.burst.__str__())
             current.wtime -= timer
             srptfinalprocess.append(current.__copy__())
-            elements +=1
+            elements += 1
         else:
             current.burst -= 1
         if current.burst <= 0:
             current=None
         timer += 1
         for x in waiting:
-            x.wtime +=1
+            x.wtime += 1
         if waiting.__len__() == 0 and elements == 20:
-            stop=True
+            stop = True
     wait4 = 0
     for x in srptfinalprocess:
         x.wtime = wait4 - x.arr
@@ -161,23 +161,22 @@ def openfile():
     srptfinalprocess = sorted(srptfinalprocess, key=lambda x: x.processid, reverse=False)
     wait4=0
     srpttext += "\nwaiting_time:"
-    print(srptfinalprocess)
     for x in srptfinalprocess:
-        wait4+=x.wtime
+        wait4 += x.wtime
         srpttext += "P:%s,w:%s|" % (x.processid.__str__(), x.wtime.__str__())
     srpttext += "\naverage_waiting_time:" + (wait4 / length).__str__()
     srptContent.config(text=srpttext)
+
 #text for the Help menu
 def showhelp():
     messagebox.showinfo('Lab 2 description:',"On Processor Management and Job SchedulingImplement the FCFS, SJF, SRPT, Priority and Round-robin scheduling.\n Sample data is given to you (please refer to process1.txt and process2.txt).\n• For FCFS and SJF, assume all processes arrived at time 0 in that order.\n • For SRPT, consider the arrival time of each processes.\n • For Priority, assume that lower-value priorities have higher priorities (that means 0 is the highest priority).\n • For round-robin scheduling, assume a uniform time slice of 4 millisecond.\nDisplay the waiting time for each process for every algorithm, as well as their average computing time.\n Also, perform an algorithm evaluation, based on the datasets given to you.")
 
-
 #************************** main window code goes  here***********************************
 root = Tk()
-root.minsize(width=325,height=100)
+root.minsize(width=325, height=100)
 
 #left frame here
-mainframe = Frame(root,bg='#2B2B2B')
+mainframe = Frame(root, bg='#2B2B2B')
 mainframe.pack()
 
 textwidth=1000
@@ -185,17 +184,17 @@ backgroundcolor='#2B2B2B'
 fgcolor="#A9B7C6"
 
 #labels here
-fcfslabel = Label(mainframe,text="FCFS",bg=backgroundcolor,borderwidth=1)
+fcfslabel = Label(mainframe, text="FCFS", bg=backgroundcolor, borderwidth=1)
 fcfslabel.grid(column=0,row=0,sticky=NE)
 fcfslabel.config(foreground=fgcolor)
-fcfsContent = Label(mainframe,text=fcfstext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
-fcfsContent.grid(column=1,row=0,sticky=W)
+fcfsContent = Label(mainframe, text=fcfstext, wraplength=textwidth, bg=backgroundcolor, relief=SUNKEN, borderwidth=1)
+fcfsContent.grid(column=1, row=0, sticky=W)
 fcfsContent.config(foreground=fgcolor)
 
-sjflabel = Label(mainframe,text="SJF",bg=backgroundcolor,borderwidth=1)
-sjflabel.grid(column=0,row=1,sticky=NE)
+sjflabel = Label(mainframe, text="SJF", bg=backgroundcolor, borderwidth=1)
+sjflabel.grid(column=0, row=1, sticky=NE)
 sjflabel.config(foreground=fgcolor)
-sjfContent = Label(mainframe,text=sjftext,wraplength=textwidth,bg=backgroundcolor,relief=SUNKEN,borderwidth=1)
+sjfContent = Label(mainframe, text=sjftext, wraplength=textwidth, bg=backgroundcolor, relief=SUNKEN, borderwidth=1)
 sjfContent.grid(column=1,row=1,sticky=W)
 sjfContent.config(foreground=fgcolor)
 
