@@ -6,7 +6,7 @@ from tkinter import *
 from tkinter import filedialog
 from tkinter import messagebox
 
-# initialize variables(each text will be the placeholder for the GUI in the output
+# initialize global variables(each text will be the placeholder for the GUI in the output
 fcfstext = ""
 sjftext = ""
 srpttext = ""
