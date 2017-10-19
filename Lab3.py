@@ -153,6 +153,7 @@ memories = mem1,mem2,mem3,mem4,mem5,mem6,mem7,mem8,mem9,mem10
 started=FALSE
 timer_id = None
 total_internal_fragmentation=0
+average_wait_time=0
 
 #text for the Help menu
 def showhelp():
@@ -165,6 +166,7 @@ def clock():
     global timer_id
     global done
     global total_internal_fragmentation
+    global average_wait_time
     usecounter = 0
     total_internal_fragmentation = 0
     #start of segment to update all labels of each memory locations and their current jobs
@@ -178,8 +180,13 @@ def clock():
         wait_text += i.__repr__()+"\n"
     waitlist.config(text=wait_text)
     done_text=""
+    total_wait=0
     for p in done:
+        total_wait+=(p.wtime+1)
         done_text += "Job %s, wait: %sms \n" % (p.id.__repr__(),(p.wtime+1).__repr__())
+    if(len(done) > 0):
+        average_wait_time = total_wait / len(done)
+    average_wait_label.config(text="Average Waiting Time: %sms "%average_wait_time)
     jobs_done.config(text=done_text)
     total_fragmentation.config(text="Total:\t\t%s"%total_internal_fragmentation)
     #end of label update segment
@@ -211,6 +218,8 @@ def clock():
 
 def simulate_first_fit():
     global memories
+    global average_wait_time
+    average_wait_time=0
     if timer_id != None:
        root.after_cancel(timer_id)
     initialize_jobs()
@@ -230,6 +239,8 @@ def simulate_best_fit():
        root.after_cancel(timer_id)
     initialize_jobs()
     global memories
+    global average_wait_time
+    average_wait_time = 0
     global t
     t= -1
     global done
@@ -247,6 +258,8 @@ def simulate_worst_fit():
        root.after_cancel(timer_id)
     initialize_jobs()
     global memories
+    global average_wait_time
+    average_wait_time = 0
     global t
     t= -1
     global done
@@ -371,6 +384,8 @@ jobs_done.grid(row=12,column=1)
 """label that shows the total for largest internal fragmentation"""
 total_fragmentation = Label(mainframe,text = "Total:\t\t%s"%total_internal_fragmentation)
 total_fragmentation.grid(row=11,column=2)
+average_wait_label = Label(mainframe, text="Average Wait Time: \t\t%s"%average_wait_time)
+average_wait_label.grid(row=12,column=2)
 """
 submenu code goes here
 """
