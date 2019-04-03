@@ -1,0 +1,82 @@
+"""
+This is a recursive-descent parser that will validate the following grammar:
+
+<expr>          ::=     <term><expr_tail>
+<expr_tail>     ::=     +<term><expr_tail>      |   -<term><expr_tail>      | e
+<term>          ::=     <factor><term_tail>
+<term_tail>     ::=     *<factor><term_tail>    |   /<factor><term_tail>    | e
+<factor>        ::=     (<expr>)                |   <digit>
+<digit>         ::=     0            | 1        |   2           |   3
+* all valid input should be terminated by $(dollar sign)
+
+by: Rayven Ingles
+University of the Philippines Cebu Campus
+"""
+
+
+def expr():
+    global next_token, tokens
+    term()
+    expr_tail()
+
+
+def expr_tail():
+    global next_token, tokens
+    if next_token.__eq__('+') | next_token.__eq__('-'):
+        get_next()
+        expr_tail()
+    return
+
+
+def term():
+    global next_token, tokens
+    factor()
+    term_tail()
+
+
+def term_tail():
+    global next_token, tokens
+    if next_token.__eq__('*') | next_token.__eq__('/'):
+        get_next()
+        term_tail()
+    return
+
+
+def factor():
+    global next_token, tokens
+    if next_token.__eq__('('):
+        get_next()
+        expr()
+        if next_token.__eq__(')'):
+            get_next()
+            return
+    digit()
+
+
+def digit():
+    global next_token, tokens
+    if next_token.__eq__('0') | next_token.__eq__('1') | next_token.__eq__('2') | next_token.__eq__('3'):
+        get_next()
+    else:
+        print("Invalid Input")
+        quit()
+    return
+
+
+def get_next():
+    global next_token,tokens
+    next_token = tokens[0]
+    if tokens.__len__() > 1:
+        tokens = tokens[1:]
+
+
+global next_token,tokens
+tokens = input("Enter a string: ")
+while tokens.__len__() > 1:
+    get_next()
+    expr()
+get_next()
+if next_token.__eq__('$'):
+    print("Valid Input")
+else:
+    print("Invalid Input")
