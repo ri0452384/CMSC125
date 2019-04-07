@@ -3,15 +3,8 @@ This is a recursive-descent parser that will validate the following grammar:
 
 <expr>          ::=     +<num>  |   -<num>   |  <num>
 <num>           ::=     <digits>.<digits> | <digits>
-<digits>        ::=    <digits><digit> | <digit> | e
+<digits>        ::=    <digit><digits> | <digit> | e
 <digit>         ::=      0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9
-
-<digits>        ::=     e | <num><suffix> | <digit><suffix>
-
-
-
-<identifier> ::= <letter> <suffix>
-<suffix> ::=  <empty> | <letter> <suffix> | <digit> <suffix>
 
 
 * all valid input should be terminated by $(dollar sign)
